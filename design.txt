@@ -1,0 +1,42 @@
+API design
+These need to be done from the project perspective
+logging, admin, users
+API security
+
+The first part of the API is dedicated to read and write data from FE point of view
+The following functionality need to be implemented as endpoints in the API
+ 
+Sensors must have the following field in json:
+  - status (ON/OFF)
+  - data
+  - timestamp
+ 
+ GET /api/sensors
+ PUT /api/sensors/<sensor_name> - create sensor - this should be defined in kind of config file
+ GET /api/sensors/<sensor_name> - get latest sensor read from database
+
+
+The below is describing the API from the BE point of view
+The external application should read the sensors data and store results in the database.
+It should be defined how much data can be stored. Some aggregation can be made on old samples instead of
+simply removing it.
+ 
+It also need to be real-time configurable with the API. The external app, running on raspberry pi should listen
+for the config change and apply the changes.
+
+Configurable parameters are:
+  - time interval between samples per each sensor
+  - setting the controller state if exist
+  - adding controller and its functions
+
+Configuration API consists of:
+ GET /api/config - get whole configuration running on raspberry pi
+ GET /api/config/controllers
+ POST /api/config/controllers/<controller_name>?range=<int>,unit=<str> - define or edit controller, its range and unit on external app
+ GET /api/config/sensors/<sensor_name> - get sensor related config like interval
+ POST /api/config/sensors/<sensor_name>?interval=<int> - configure time interval, it controls how often the data is write to database
+ POST /api/config/controllers/<controller_name>/tune?direction=<up/down>,units=<int> - eg. tune the temperature up of 2 C, default units=1, direction is required
+
+A proper json/yaml config file must be created to cover initial config for the whole system.
+
+Grafana is taken under consideration for generating real-time graphs in FE.
